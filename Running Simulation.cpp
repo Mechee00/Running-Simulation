@@ -11,6 +11,7 @@
 #include <chrono> // Needed for the clock fucntion
 #include <iostream>
 #include <stdlib.h>
+#include <math.h>
 #include <iomanip>
 #include <time.h>
 
@@ -19,11 +20,28 @@
 using namespace std;
 using namespace std::chrono;
 
-#define FREQUENCY 1
-#define TOTAL_SQUARE_COUNT 60
+#define TOTAL_SQUARE_COUNT 40
 
-#define DEBUG
-// DEFINE constants used in the program
+// Set the delayh duration, CHOOSE ONLY 1 between DEBUG_MANUAL_UPDATE or TIMER or SLEEP
+#define DELAY_DURATION 1000
+// #define DEBUG_MANUAL_UPDATE
+#define TIMER
+// #define SLEEP
+
+// Overide random position with static value
+// #define DEBUG_MANUAL_RUNNER_POS
+// #define DEBUG_SHOW_POS_VALUE
+#define MANUAL_RUNNER_1_POS 57
+#define MANUAL_RUNNER_2_POS 57
+
+// Movement value
+#define Walk -2.00
+#define Crawl -2.00
+#define Sleep 0.00
+#define Jog 0.50
+#define Sprint 0.60
+#define Run 1.50
+#define Fast_Sprint 1.67;
 
 // ##################
 // #    Function 	:   randomInt
@@ -51,30 +69,31 @@ double Action()
 
     switch (Action_Code)
     {
-
     case 1: // Walk
+        return Walk;
+        break;
     case 2: // Crawl
-        return -2.00;
+        return Crawl;
         break;
 
     case 3: // Sleep
-        return 0.00;
+        return Sleep;
         break;
 
     case 4: // Jog
-        return 0.50;
+        return Jog;
         break;
 
     case 5: // Sprint
-        return 0.60;
+        return Sprint;
         break;
 
     case 6: // Run
-        return 1.50;
+        return Run;
         break;
 
     case 7: // Fast Sprint
-        return 1.67;
+        return Fast_Sprint;
         break;
 
     default:
@@ -86,7 +105,8 @@ void UpdateRunnerPos(double *runner)
 {
     int Time_Sum = 0, Time_Percent = 0;
     double prevAction = 0, theAction = 0;
-    do
+
+    do // Loop for finding activity and percent of time  for 1 cycle
     {
         Time_Percent = randomInt(1, 10 - Time_Sum); // Generate a random percent of a cycle
         Time_Sum += Time_Percent;                   // Update counter that check if a cycle is complete
@@ -99,66 +119,154 @@ void UpdateRunnerPos(double *runner)
         prevAction = theAction;            // Update the previous action
         //++++++++++++++++++++++++++++++++++++++++++++++++++ Prevent repeating Action for different consecutive time percent
 
-        *runner += theAction * Time_Percent;
+        *runner += theAction * Time_Percent; // Multiply action and time percent to get movement
 
     } while (Time_Sum < 10);
+
+    *runner = (*runner < 0) ? 0 : *runner;                                   // Set to 0 if runner pos is lower than 0
+    *runner = (*runner > TOTAL_SQUARE_COUNT) ? TOTAL_SQUARE_COUNT : *runner; // Set to max if runner pos is greater than max
+}
+
+void ShowRunnerPos(double *runnerPos, string runner_num)
+{
+    cout << "Runner " << runner_num << " : ";
+    for (int i = 0; i <= TOTAL_SQUARE_COUNT; i++)
+    {
+        string pos;
+        if (i == *runnerPos)
+        {
+            pos = runner_num;
+        }
+        else
+        {
+            pos = '_';
+        }
+        cout << pos;
+    }
+    cout << endl;
+}
+
+void ShowPosMark(double *runner1_var, double *runner2_var)
+{
+    cout << "Position : ";
+    for (int i = 0; i <= TOTAL_SQUARE_COUNT; i++)
+    {
+        if (i == 0) // Marker line pos 0
+        {
+            cout << 0;
+        }
+        else if (i == TOTAL_SQUARE_COUNT) // Marker line pos 60
+        {
+            cout << TOTAL_SQUARE_COUNT;
+        }
+        else if ((*runner1_var == *runner2_var) && (*runner1_var == i)) // Marker line both runner same pos
+        {
+            cout << "GOTCHA!";
+            i += 6;
+        }
+        else // Marker line default
+        {
+            cout << ((i % 5 == 0) ? "^" : ".");
+        }
+    }
+    cout << "\n\n";
+}
+
+bool ShowWinner(double *runner1, double *runner2)
+{
+    // Check if there is a winner or a TIE
+    if ((*runner1 == TOTAL_SQUARE_COUNT) && (*runner2 == TOTAL_SQUARE_COUNT))
+    {
+        cout << "\n===== IT IS A TIE! =====\n"; // Both runner arrived at 60 at once !
+        return true;
+    }
+    else if (*runner1 == TOTAL_SQUARE_COUNT)
+    {
+        cout << "\n===== # RUNNER 1 WINS! # =====\n"; // Runner 1 arrived at 60!
+        return true;
+    }
+    else if (*runner2 == TOTAL_SQUARE_COUNT)
+    {
+        cout << "\n===== # RUNNER 2 WINS! # =====\n";
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void main()
 {
-
     srand(time(NULL)); // Initialize Seed for rand function
 
     high_resolution_clock hrc;
 
     // DECLARE variables
-    int Timer_1 = 0, Timer_2 = 0;              // Keep track of how long the Runner 1,2 takes to complete
     double Pos_Runner_1 = 0, Pos_Runner_2 = 0; // Keep track of the Runner 1,2 position
     int duration;
 
+    cout << "++++++++++ (Running Competition Simulator )++++++++++\n";
+    cout << "\nThe race is about to start!\n\n";
+    ShowRunnerPos(&Pos_Runner_1, "1");
+    ShowRunnerPos(&Pos_Runner_2, "2");
+    ShowPosMark(&Pos_Runner_1, &Pos_Runner_2);
+    cout << endl;
+    system("pause");
 START:
+    system("cls");
+#ifdef TIMER
+    auto timeStamp = hrc.now();
+#endif
+
+#ifdef DEBUG_MANUAL_RUNNER_POS
+    Pos_Runner_1 = MANUAL_RUNNER_1_POS;
+    Pos_Runner_2 = MANUAL_RUNNER_2_POS;
+#else
     UpdateRunnerPos(&Pos_Runner_1);
     UpdateRunnerPos(&Pos_Runner_2);
 
-    // INPUT from user
-
-    // PROCESS the user input computing the desired output
-
-    // OUTPUT the final result
-
-    // Loop for 1 Cycle
-
-    // Start the timer
-    // auto timeStamp = hrc.now();
-
-    // cout << randomInt(0, 1) << "\t"
-    cout << "\t" << setprecision(2) << fixed << showpoint
-         << "Runner 1 Pos: " << Pos_Runner_1
-         << "\nRunner 2 Pos: " << Pos_Runner_2
-         << "\n\t"
-         << "End"
-         << "\t\n";
-    // auto currentTime = hrc.now();
-
-    // Catch the program to loop until defined interval
-    // do
-    // {
-    //     auto currentTime = hrc.now();
-    //     duration = duration_cast<milliseconds>(currentTime - timeStamp).count();
-    // } while (duration < 1000 / FREQUENCY);
-
-// cout << "Elapsed time in milliseconds: "
-//      << chrono::duration_cast<chrono::milliseconds>(end - start).count()
-//      << " ms" << endl;
-
-// cout << "Elapsed time in seconds: "
-//      << chrono::duration_cast<chrono::seconds>(end - start).count()
-//      << " sec";
-
-// LOOP the program if desired
-#ifdef DEBUG
-    system("pause");
-    system("cls");
-    goto START;
+    Pos_Runner_1 = round(Pos_Runner_1);
+    Pos_Runner_2 = round(Pos_Runner_2);
 #endif
+
+    cout << "++++++++++ (Running Competition Simulator )++++++++++\n"
+         << "!!!!!!!!!!!!!!!!!!!! ( BANG !!! ) !!!!!!!!!!!!!!!!!!!!\n"
+         << "!!!!!!!!!!!!!! ( AND AWAY THEY GO !!! ) !!!!!!!!!!!!!!\n\n";
+
+    ShowRunnerPos(&Pos_Runner_1, "1");
+    ShowRunnerPos(&Pos_Runner_2, "2");
+    ShowPosMark(&Pos_Runner_1, &Pos_Runner_2);
+
+#ifdef DEBUG_SHOW_POS_VALUE
+    cout << "\nRunner 1 Pos: " << Pos_Runner_1
+         << "\nRunner 2 Pos: " << Pos_Runner_2
+         << endl;
+#endif
+
+    if (ShowWinner(&Pos_Runner_1, &Pos_Runner_2))
+    {
+        cout << "\nThe Race has ended.\n\n";
+        system("pause");
+        return;
+    }
+
+#ifdef DEBUG_MANUAL_UPDATE
+    system("pause");
+#endif
+
+#ifdef TIMER
+    // Catch the program to loop until defined interval
+    do
+    {
+        auto currentTime = hrc.now();
+        duration = duration_cast<milliseconds>(currentTime - timeStamp).count();
+    } while (duration < DELAY_DURATION);
+#endif
+
+#ifdef SLEEP
+    Sleep(DELAY_DURATION);
+#endif
+
+    goto START;
 }
