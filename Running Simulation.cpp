@@ -15,6 +15,8 @@ using namespace std::chrono; // Use for highresolutionclock.
 #define CLEARSCREEN // Enable or disable clearscreen operation
 #define ENABLE_MENU // Enable or disable menu module
 #define NOENDING    // Enable or disable the program to end when there is a winner
+// #define POSITION_OVERRIDE      // Enable to manually override the position of each runner in the array
+// #define TIME_ACTIVITY_OVERRIDE // Enable to manually override the activity and action data
 
 // MUST CHOOSE 1 and ONLY 1
 #define REFRESH_POS_MANUAL // Manualy press any key to refresh the runner position
@@ -22,19 +24,46 @@ using namespace std::chrono; // Use for highresolutionclock.
 // #define REFRESH_POS_SLEEP  // Using Sleep() funciton to halt the program
 
 // Movement value
-#define WALK -2.00        // Default value -2.00
-#define CRAWL -2.00       // Default value is -2.00
-#define SLEEP 0.00        // Default value is 0.00
-#define JOG 0.50          // Default value is 0.50
-#define SPRINT 0.60       // Default value is 0.60
-#define RUN 1.50          // Default value is 1.50
-#define FAST_SPRINT 1.67; // Default value is 1.670
+const double WALK = -2.00;       // Default value -2.00
+const double CRAWL = -2.00;      // Default value is -2.00
+const double SLEEP = 0.00;       // Default value is 0.00
+const double JOG = 0.50;         // Default value is 0.50
+const double SPRINT = 0.60;      // Default value is 0.60
+const double RUN = 1.50;         // Default value is 1.50
+const double FAST_SPRINT = 1.67; // Default value is 1.670
 
-#define MIN_RUNNER_COUNT 2       // Default value is 2
-#define MAX_RUNNER_COUNT 9       // Default value is 9
-#define MIN_TRACK_LENGTH 10      // Default value is 10
-#define MAX_TRACK_LENGTH 100     // Default value is 100
-#define MIN_REFRESH_INTERVAL 250 // Default value is 250
+const int MIN_RUNNER_COUNT = 2;       // Default value is 2
+const int MAX_RUNNER_COUNT = 9;       // Default value is 9
+const int MIN_TRACK_LENGTH = 10;      // Default value is 10
+const int MAX_TRACK_LENGTH = 100;     // Default value is 100
+const int MIN_REFRESH_INTERVAL = 250; // Default value is 250
+
+#ifdef POSITION_OVERRIDE
+const double POSITION[MAX_RUNNER_COUNT] = {0,  // Position value for runner 1
+                                           1,  // Position value for runner 2
+                                           2,  // Position value for runner 3
+                                           3,  // Position value for runner 4
+                                           4,  // Position value for runner 5
+                                           5,  // Position value for runner 6
+                                           6,  // Position value for runner 7
+                                           7,  // Position value for runner 8
+                                           8}; // Position value for runner 9
+
+#endif
+
+#ifdef TIME_ACTIVITY_OVERRIDE
+const double ACTIVITY_TIME[MAX_RUNNER_COUNT][10][2] = {
+    {{6, FAST_SPRINT}, {1, CRAWL}, {2, SLEEP}, {1, SPRINT}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}}, // Time % and Action value for Runner 1 [.][.][0] = time % ; [.][.][1] = activity
+    {{6, FAST_SPRINT}, {1, CRAWL}, {2, SLEEP}, {1, SPRINT}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}}, // Time % and Action value for Runner 2 [.][.][0] = time % ; [.][.][1] = activity
+    {{10, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},                       // Time % and Action value for Runner 3 [.][.][0] = time % ; [.][.][1] = activity
+    {{10, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},                       // Time % and Action value for Runner 4 [.][.][0] = time % ; [.][.][1] = activity
+    {{10, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},                       // Time % and Action value for Runner 5 [.][.][0] = time % ; [.][.][1] = activity
+    {{10, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},                       // Time % and Action value for Runner 6 [.][.][0] = time % ; [.][.][1] = activity
+    {{10, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},                       // Time % and Action value for Runner 7 [.][.][0] = time % ; [.][.][1] = activity
+    {{10, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},                       // Time % and Action value for Runner 8 [.][.][0] = time % ; [.][.][1] = activity
+    {{10, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},                       // Time % and Action value for Runner 9 [.][.][0] = time % ; [.][.][1] = activity
+};
+#endif
 
 // Variable that can be changed in Menu module
 int Runner_Count = 2;        // Default value is 2
@@ -42,12 +71,10 @@ int Track_Length = 60;       // Default value is 60
 int Refresh_Interval = 1000; // Default value is 1000
 
 // Variables to store and keep track of the winner and gotcha runner
-int Winner_Index = 0;                           // Winner index
 int Winner_Count = 0;                           // Counter for winner
 int Winner[MAX_RUNNER_COUNT] = {0};             // Winners' index [Winner's Position]
 int Gotcha_Count = 0;                           // Counter for gotcha
 int Gotcha_Group_Count = 0;                     // Counter for gotcha group
-int Gotcha_Group_Index = 0;                     // Gotcha index counter
 int Gotcha_Group[MAX_RUNNER_COUNT / 2][2];      // Gotcha's index [Position Group][0:Position of gotcha, 1:Count of runner]
 double Pos_Sample = 0;                          // Position sample for searching
 double Runner_Pos[MAX_RUNNER_COUNT] = {0};      // To store Runner's position
@@ -122,41 +149,88 @@ void UpdateRunnerPos()
     fill(begin(Runner_Pos_Sort), end(Runner_Pos_Sort), 0); // Clear the sorted array
     fill(begin(Winner), end(Winner), 0);                   // Clear the winner array
     Winner_Count = 0;                                      // Reset the winner count
-    Winner_Index = 0;                                      // Reset the winner index
 
     for (int i = 0; i < Runner_Count; i++) // Loop for all runners
     {
+#ifndef POSITION_OVERRIDE
         int Time_Sum = 0, Time_Percent = 0;   // Initialize the sum of %time and the %time variable to store generated random value in range
         double prevAction = 0, theAction = 0; // Variable to track if the current generated action is same as previous
-
+        int Set_Count = 0;
         do // Loop for 1 cycle of time
         {
+#ifdef TIME_ACTIVITY_OVERRIDE
+            Runner_Pos[i] += ACTIVITY_TIME[i][Set_Count][0] * ACTIVITY_TIME[i][Set_Count][1]; // Calculate the position based on preset data
+            Time_Sum += ACTIVITY_TIME[i][Set_Count][0];                                       // Add up the time sum counter
+            Set_Count++;                                                                      // Increase the counter for next set of data
+#else
             Time_Percent = randomInt(1, 10 - Time_Sum); // Generate a random %time of a cycle
             Time_Sum += Time_Percent;                   // Update counter that check if a cycle is complete
 
-            //++++++++++++++++++++++++++++++++++++++++++++++++++ Prevent repeating Action for different consecutive time percent
+            // Prevent repeating Action for different consecutive time percent
             do
             {
                 theAction = randomAction();    // Get a random action
             } while (prevAction == theAction); // Loop if the random action is same as previous action
             prevAction = theAction;            // Update the previous action
-            //++++++++++++++++++++++++++++++++++++++++++++++++++ Prevent repeating Action for different consecutive time percent
 
             Runner_Pos[i] += theAction * Time_Percent; // Multiply action and time percent to get movement
-
+#endif
         } while (Time_Sum < 10); // Loop until the %time is 100%
-
+#else
+        Runner_Pos[i] = POSITION[i];                    // Manually overi
+#endif
         Runner_Pos[i] = (Runner_Pos[i] < 0) ? 0 : Runner_Pos[i]; // Set to 0 if runner pos is lower than 0
         Runner_Pos[i] = round(Runner_Pos[i]);                    // Round the runner position after calculation to make a whole number
 
         if (Runner_Pos[i] >= Track_Length) // If the runner pos is 60 or greater then
         {
             Runner_Pos[i] = Track_Length; // Set to runner pos to max
+            Winner[Winner_Count] = i + 1; // Store the runner's number who is a winner
             Winner_Count += 1;            // Increase winner counter
-            Winner[Winner_Index] = i + 1; // Store the runner's number who is a winner
-            Winner_Index++;               // Increase the index number for next winner
         }
         Runner_Pos_Sort[i] = Runner_Pos[i]; // Copy the runner's position to the sort array
+    }
+}
+
+// #    Function 	:   CheckGotcha
+// #    Description	:   search all the runner array for gotcha
+// #    Argument	:   n/a
+// #    Return		:   n/a
+void CheckGotcha()
+{
+    sort(begin(Runner_Pos_Sort), end(Runner_Pos_Sort)); // Sort the array in accending order
+    Gotcha_Group_Count = 0;                             // Reset the Gotcha Group Count
+
+    // =================================================Check Gotcha
+    // Concept of taking n term value to test the value of n+1 term
+    for (int i = MAX_RUNNER_COUNT - 1; i > 0; i--) // Loop Sorted Runner Position in reverse order
+    {
+        if (Runner_Pos_Sort[i] == 0) // If the current runner position value is 0
+        {
+            break; // Break the loop and end the search
+        }
+        Pos_Sample = Runner_Pos_Sort[i]; // Update Position Sample
+
+        for (int x = i - 1; x >= 0; x--) // Loop runner position with position sample
+        {
+            i = x + 1;                            // Sync with the outer loop
+            if (Pos_Sample == Runner_Pos_Sort[x]) // Check if the Sample position is same with the next position value
+            {
+                Gotcha_Count += 1; // Increase gotcha count if the sample value match with the next value
+            }
+            else // No position value that match with the sample value
+            {
+                break; // End the loop
+            }
+        }
+        // ============================================================================================= Update Gotcha
+        if (Gotcha_Count >= 1) // If there is a gotcha or more
+        {
+            Gotcha_Group[Gotcha_Group_Count][0] = Pos_Sample;       // Store the position value where gotcha occured
+            Gotcha_Group[Gotcha_Group_Count][1] = Gotcha_Count + 1; // Store how many gotcha occured at that position
+            Gotcha_Group_Count += 1;                                // Update gotcha group count
+        }
+        Gotcha_Count = 0; // Reset gotcha counter for next position value
     }
 }
 
@@ -192,8 +266,6 @@ void ShowPosMark()
     }
     cout << "\n\n"; // End the line after printing the postion mark
 }
-
-#pragma endregion Core Function
 
 // #    Function 	:   ShowGotchaWinner
 // #    Description	:   print the message for gotcha and winners
@@ -244,49 +316,7 @@ void ShowGotchaWinner()
     }
 }
 
-// #    Function 	:   CheckGotcha
-// #    Description	:   search all the runner array for gotcha
-// #    Argument	:   n/a
-// #    Return		:   n/a
-void CheckGotcha()
-{
-    sort(begin(Runner_Pos_Sort), end(Runner_Pos_Sort)); // Sort the array in accending order
-    Gotcha_Group_Count = 0;                             // Reset the Gotcha Group Count
-    Gotcha_Group_Index = 0;                             // Reset the Gotcha Group Index
-
-    // =================================================Check Gotcha
-    // Concept of taking n term value to test the value of n+1 term
-    for (int i = MAX_RUNNER_COUNT - 1; i > 0; i--) // Loop Sorted Runner Position in reverse order
-    {
-        if (Runner_Pos_Sort[i] == 0) // If the current runner position value is 0
-        {
-            break; // Break the loop and end the search
-        }
-        Pos_Sample = Runner_Pos_Sort[i]; // Update Position Sample
-
-        for (int x = i - 1; x >= 0; x--) // Loop runner position with position sample
-        {
-            i = x + 1;                            // Sync with the outer loop
-            if (Pos_Sample == Runner_Pos_Sort[x]) // Check if the Sample position is same with the next position value
-            {
-                Gotcha_Count += 1; // Increase gotcha count if the sample value match with the next value
-            }
-            else // No position value that match with the sample value
-            {
-                break; // End the loop
-            }
-        }
-        // ============================================================================================= Update Gotcha
-        if (Gotcha_Count >= 1) // If there is a gotcha or more
-        {
-            Gotcha_Group[Gotcha_Group_Index][0] = Pos_Sample;       // Store the position value where gotcha occured
-            Gotcha_Group[Gotcha_Group_Index][1] = Gotcha_Count + 1; // Store how many gotcha occured at that position
-            Gotcha_Group_Index += 1;                                // Update the gotcha group index for the next gotcha position value
-            Gotcha_Group_Count += 1;                                // Update gotcha group count
-        }
-        Gotcha_Count = 0; // Reset gotcha counter for next position value
-    }
-}
+#pragma endregion Core Function
 
 #pragma region Menu Module
 
