@@ -11,5 +11,6 @@
         "string": "cpp",
         "xstring": "cpp",
         "ostream": "cpp"
-    }
+    },
+    "editor.defaultFormatter": "ms-vscode.cpptools"
 }

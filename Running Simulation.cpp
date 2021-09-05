@@ -14,13 +14,13 @@ using namespace std::chrono; // Use for highresolutionclock.
 
 #define CLEARSCREEN // Enable or disable clearscreen operation
 #define ENABLE_MENU // Enable or disable menu module
-#define NOENDING    // Enable or disable the program to end when there is a winner
+// #define NOENDING    // Enable or disable the program to end when there is a winner
 // #define POSITION_OVERRIDE      // Enable to manually override the position of each runner in the array
 // #define TIME_ACTIVITY_OVERRIDE // Enable to manually override the activity and action data
 
 // MUST CHOOSE 1 and ONLY 1
-#define REFRESH_POS_MANUAL // Manualy press any key to refresh the runner position
-// #define REFRESH_POS_TIMER  // Using chrono time fucntion to time the program
+// #define REFRESH_POS_MANUAL // Manualy press any key to refresh the runner position
+#define REFRESH_POS_TIMER // Using chrono time fucntion to time the program
 // #define REFRESH_POS_SLEEP  // Using Sleep() funciton to halt the program
 
 // Movement value
@@ -534,9 +534,9 @@ void main() // The main program
     srand(time(NULL)); // Initialize Seed for rand function
 
 #ifdef ENABLE_MENU // ================= Menu Module
+Restart:
     MenuModule();
 #endif
-
     // Display initial state
     cout << "====================================\n"   // Print the header
          << "# (Running Competition Simulator ) #\n"   // Print the header
@@ -573,9 +573,20 @@ START:
 #ifndef NOENDING           // Disable the algorithm to end the program when winner count is more than 0
     if (Winner_Count >= 1) // Check if the winner count is more than 0
     {
-        cout << "\nThe Simulation has ended!\n\n"; // Show the program end message
-        system("pause");                           // Promt user to input any key to continue
-        return;                                    // End the main() function
+        cout << "\nThe Simulation has ended!\n"
+             << " Restart the Simulation? Y: Restart | (Anything other than 'Y'): End program: "; // Show the program end message
+        string userInput_Restart;                                                                 // String to store the user input for restarting the simulator
+        getline(cin, userInput_Restart);                                                          // Read user's input
+        if (userInput_Restart == "y" || userInput_Restart == "Y")
+        {
+            system("cls"); // Clear the screen for simulator
+            goto Restart;  // Return to main menu
+        }
+        else
+        {
+            system("pause"); // Prompt user to input any key to continue
+            return;          // End the main() function
+        }
     }
 #endif
 
@@ -595,6 +606,5 @@ START:
 #ifdef REFRESH_POS_SLEEP     // Intstruct the program to halt for predefined interval if the sleep operation is selected
     Sleep(Refresh_Interval); // Stop the process for n amount of milliseconds
 #endif
-
-    goto START; // Loop back to the point labeled with START
+    goto START; // Loop back to the point labelled with START
 }
