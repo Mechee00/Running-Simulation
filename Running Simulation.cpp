@@ -72,7 +72,7 @@ int Refresh_Interval = 1000; // Default value is 1000
 
 // Variables to store and keep track of the winner and gotcha runner
 int Winner_Count = 0;                           // Counter for winner
-int Winner[MAX_RUNNER_COUNT] = {0};             // Winners' index [Winner's Position]
+int Winner[MAX_RUNNER_COUNT] = {0};             // Winners' index [Winning Runner Number]
 int Gotcha_Count = 0;                           // Counter for gotcha
 int Gotcha_Group_Count = 0;                     // Counter for gotcha group
 int Gotcha_Group[MAX_RUNNER_COUNT / 2][2];      // Gotcha's index [Position Group][0:Position of gotcha, 1:Count of runner]
@@ -153,10 +153,10 @@ void UpdateRunnerPos()
     for (int i = 0; i < Runner_Count; i++) // Loop for all runners
     {
 #ifndef POSITION_OVERRIDE
-        int Time_Sum = 0, Time_Percent = 0;   // Initialize the sum of %time and the %time variable to store generated random value in range
-        double prevAction = 0, theAction = 0; // Variable to track if the current generated action is same as previous
-        int Set_Count = 0;
-        do // Loop for 1 cycle of time
+        int Time_Sum = 0, Time_Percent = 0;           // Initialize the sum of %time and the %time variable to store generated random value in range
+        double prevMovement = 0, currentMovement = 0; // Variable to track if the current generated action is same as previous
+        int Set_Count = 0;                            // Counter for the sets of predefined data processed
+        do                                            // Loop for 1 cycle of time
         {
 #ifdef TIME_ACTIVITY_OVERRIDE
             Runner_Pos[i] += ACTIVITY_TIME[i][Set_Count][0] * ACTIVITY_TIME[i][Set_Count][1]; // Calculate the position based on preset data
@@ -169,15 +169,15 @@ void UpdateRunnerPos()
             // Prevent repeating Action for different consecutive time percent
             do
             {
-                theAction = randomAction();    // Get a random action
-            } while (prevAction == theAction); // Loop if the random action is same as previous action
-            prevAction = theAction;            // Update the previous action
+                currentMovement = randomAction();      // Get a random action
+            } while (prevMovement == currentMovement); // Loop if the random action is same as previous action
+            prevMovement = currentMovement;            // Update the previous action
 
-            Runner_Pos[i] += theAction * Time_Percent; // Multiply action and time percent to get movement
+            Runner_Pos[i] += currentMovement * Time_Percent; // Multiply action and time percent to get movement
 #endif
         } while (Time_Sum < 10); // Loop until the %time is 100%
 #else
-        Runner_Pos[i] = POSITION[i];                    // Manually overi
+        Runner_Pos[i] = POSITION[i]; // Manually overi
 #endif
         Runner_Pos[i] = (Runner_Pos[i] < 0) ? 0 : Runner_Pos[i]; // Set to 0 if runner pos is lower than 0
         Runner_Pos[i] = round(Runner_Pos[i]);                    // Round the runner position after calculation to make a whole number
@@ -234,6 +234,17 @@ void CheckGotcha()
     }
 }
 
+// #    Function 	:   ShowSimHeader
+// #    Description	:   Print the header for the simulator
+// #    Argument	:   n/a
+// #    Return		:   n/a
+void ShowSimHeader()
+{
+    cout << "====================================\n"
+         << "# (Running Competition Simulator ) #\n"
+         << "====================================\n\n";
+}
+
 // #    Function 	:   ShowRunnerPos
 // #    Description	:   print the position for all the runner registered
 // #    Argument	:   n/a
@@ -262,7 +273,7 @@ void ShowPosMark()
     {
         // Print the track length at the end of the track length or the marking for the track
         cout << ((i == Track_Length) ? to_string(Track_Length) : ((i % 10 == 5) ? "^" : ((i % 10 == 0) ? to_string(i / 10) : "-")));
-        // cout << ((i == Track_Length) ? to_string(Track_Length) : ((i % 5 == 0) ? "^" : "."));
+        // cout << ((i == Track_Length) ? to_string(Track_Length) : ((i % 5 == 0) ? "^" : ".")); // Alternative Mark
     }
     cout << "\n\n"; // End the line after printing the postion mark
 }
@@ -273,14 +284,12 @@ void ShowPosMark()
 // #    Return		:   n/a
 void ShowGotchaWinner()
 {
-
     // ====================================================================================SHOW GOTCHA
     if (Gotcha_Group_Count >= 1) // Check if there is gotcha
     {
         cout << "**************************************************** GOTCHA!\n"; // Print the seperating line for Gotcha
         cout << "FINALLY!!! " << Gotcha_Group_Count << " GOTCHA!!\n";             // PPrint the gotcha message showing how many group of gotcha
-
-        for (int i = 0; i < Gotcha_Group_Count; i++) // Loop through each gotcha group
+        for (int i = 0; i < Gotcha_Group_Count; i++)                              // Loop through each gotcha group
         {
             cout << "At square " << Gotcha_Group[i][0] << ", runner #: "; // Print message for the gotcha position
             int x = 0;                                                    // Counter to keep track how many gotcha runner's has been found
@@ -421,7 +430,7 @@ void ShowSubMenu(char menu, bool errorFlag1, bool errorFlag2)
 // #    Return		:   true for invalid; false for valid
 bool CheckInput(string *input, bool *errorFlag, string type = "menu")
 {
-    regex options;      // Initiate varaibel to store the regex sample
+    regex options;      // Initiate varaible to store the regex sample
     if (type == "menu") // If menu type is selected
     {
         options = "([rtpsRTPS]{1})"; // Set the sample for menu as the regex sample
@@ -514,16 +523,13 @@ void MenuModule()
 
         if (toupper(userIn_Option[0]) == 'S') // Exit the loop if it is S
             break;
-
         // ==================================== Sub Menu
         do
         {
             ShowSubMenu(userIn_Option[0], inputError, valueError);                                                                 // Show the Sub Menu
         } while ((CheckInput(&userIn_Value, &inputError, "value")) || (CheckValue(&userIn_Value, userIn_Option[0], &valueError))); // Check the input and loop if invalid
-
         // ==================================== Update Values
         UpdateValues(userIn_Option[0], stoi(userIn_Value));
-
     } while (userIn_Option[0] != 'S'); // Loop back to main menu if the input is not S
 }
 
@@ -531,34 +537,30 @@ void MenuModule()
 
 void main() // The main program
 {
-    srand(time(NULL)); // Initialize Seed for rand function
-
-#ifdef ENABLE_MENU // ================= Menu Module
+    srand(time(NULL));                                                                                                // Initialize Seed for rand function
+    SetConsoleTitleA("BACS1014-Assignment ( Running Competition Simulator ) Code by Cheah Pin Chee & Lim Ler Shean"); // Set Console Title
 Restart:
+#ifdef ENABLE_MENU // ================= Menu Module
     MenuModule();
 #endif
-    // Display initial state
-    cout << "====================================\n"   // Print the header
-         << "# (Running Competition Simulator ) #\n"   // Print the header
-         << "====================================\n\n" // Print the header
-         << "\nThe race is about to start!\n\n";       // Starting message
-    ShowRunnerPos();                                   // Show the runner's initial position at 0
-    ShowPosMark();                                     // Show the marking for the positons
-    system("pause");                                   // Promt the user for starting the race
-    cout << "BANG !!!\nAND AWAY THEY GO !!!\n\n";      // Print the started message
+
+    ShowSimHeader();                              // Print the header
+    cout << "\nThe race is about to start!\n\n";  // Starting message
+    ShowRunnerPos();                              // Show the runner's initial position at 0
+    ShowPosMark();                                // Show the marking for the positons
+    system("pause");                              // Promt the user for starting the race
+    cout << "BANG !!!\nAND AWAY THEY GO !!!\n\n"; // Print the started message
 
 START:
-#ifdef CLEARSCREEN                                      // The message for crealscreen operation is selected
-    system("cls");                                      // Clear the system screen
-    cout << "====================================\n"    // Print the header
-         << "# (Running Competition Simulator ) #\n"    // Print the header
-         << "====================================\n\n"; // Print the header
-    cout << "BANG !!!\nAND AWAY THEY GO !!!\n\n";       // Print the started mesage
-#else                                                   // The message for no clearscreen
-    cout << "\n====================================\n"  // Print the header
-         << "# (Running Competition Simulator ) #\n"    // Print the header
-         << "====================================\n\n"; // Print the header
+#ifdef CLEARSCREEN                                // The message for crealscreen operation is selected
+    system("cls");                                // Clear the system screen
+    ShowSimHeader();                              // Print the header
+    cout << "BANG !!!\nAND AWAY THEY GO !!!\n\n"; // Print the started mesage
+#else                                             // The message for no clearscreen
+    cout << endl;                    // Print end line
+    ShowSimHeader();                 // Print the header
 #endif
+
 #ifdef REFRESH_POS_TIMER        // Initialize and get a time stamp with chrono high resolution clock if Timer operation is selected
     high_resolution_clock hrc;  // Use hrc as high_resolution_clock
     auto timeStamp = hrc.now(); // Get a time stamp
