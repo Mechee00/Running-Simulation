@@ -1,7 +1,7 @@
 ﻿  Running Simulation.cpp
-C:\Users\MrChe\OneDrive - mechee\Personal Archive\TARUC\BACS1014 ( Problem Solving And Programming )\Assignment\Running Simulation\Running Simulation.cpp(190,1): warning C4326: return type of 'main' should be 'int' instead of 'void'
-C:\Users\MrChe\OneDrive - mechee\Personal Archive\TARUC\BACS1014 ( Problem Solving And Programming )\Assignment\Running Simulation\Running Simulation.cpp(191,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-C:\Users\MrChe\OneDrive - mechee\Personal Archive\TARUC\BACS1014 ( Problem Solving And Programming )\Assignment\Running Simulation\Running Simulation.cpp(194,8): warning C4102: 'Restart': unreferenced label
+C:\Users\MrChe\OneDrive - mechee\Personal Archive\TARUC\BACS1014 ( Problem Solving And Programming )\Assignment\Running Simulation\Running Simulation.cpp(191,1): warning C4326: return type of 'main' should be 'int' instead of 'void'
+C:\Users\MrChe\OneDrive - mechee\Personal Archive\TARUC\BACS1014 ( Problem Solving And Programming )\Assignment\Running Simulation\Running Simulation.cpp(192,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\MrChe\OneDrive - mechee\Personal Archive\TARUC\BACS1014 ( Problem Solving And Programming )\Assignment\Running Simulation\Running Simulation.cpp(195,8): warning C4102: 'Restart': unreferenced label
 C:\Users\MrChe\OneDrive - mechee\Personal Archive\TARUC\BACS1014 ( Problem Solving And Programming )\Assignment\Running Simulation\Running Simulation.cpp(521,51): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
 C:\Users\MrChe\OneDrive - mechee\Personal Archive\TARUC\BACS1014 ( Problem Solving And Programming )\Assignment\Running Simulation\Running Simulation.cpp(402): warning C4715: 'Generate_Action': not all control paths return a value
   Running Simulation.vcxproj -> C:\Users\MrChe\OneDrive - mechee\Personal Archive\TARUC\BACS1014 ( Problem Solving And Programming )\Assignment\Running Simulation\Debug\Running Simulation.exe

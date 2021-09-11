@@ -13,18 +13,13 @@ using namespace std;         // Use for cout, cin, etc
 using namespace std::chrono; // Use for highresolutionclock.
 
 #define ENABLE_CLEAR_SCREEN // Enable or disable ENABLE_CLEAR_SCREEN operation
-// #define ENABLE_SETTINGS // Enable or disable menu module
+#define ENABLE_SETTINGS     // Enable or disable menu module
 #define ENABLE_ENDLESS_LOOP // Enable or disable the program to end when there is a winner
 
-// #define POSITION_OVERRIDE // Enable to manually override the position of each runner in the array
-// #define TIME_ACTIVITY_OVERRIDE // Enable to manually override the activity and action data
-#define PATH_CONDITION_OVERRIDE     // Enable to manually override the path condition factor
-#define WEATHER_CONTDITION_OVERRIDE // Enable to manually overide the weather condition
-
 // MUST CHOOSE 1 and ONLY 1
-#define REFRESH_POS_MANUAL // Manualy press any key to refresh the runner position
-// #define REFRESH_POS_TIMER // Using chrono time fucntion to time the program
-// #define REFRESH_POS_SLEEP  // Using Sleep() funciton to halt the program
+#define REFRESH_POS_MANUAL // Manually press any key to refresh the runner position
+// #define REFRESH_POS_TIMER // Using chrono time function to time the program
+// #define REFRESH_POS_SLEEP  // Using Sleep() function to halt the program
 
 #pragma region Movement, Weather And Path Constants
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Movement value
@@ -68,18 +63,21 @@ const int MAX_PATH_CONDITION_LENGTH = 25; // Default value is 10
 #pragma endregion Movement, Weather And Path Constants
 
 #pragma region Override Constants
+
+// #define POSITION_OVERRIDE // Enable to manually override the position of each runner in the array
 #ifdef POSITION_OVERRIDE
-const double POSITION[MAX_RUNNER_COUNT] = {0,  // Position value for runner 1
-                                           1,  // Position value for runner 2
-                                           2,  // Position value for runner 3
-                                           3,  // Position value for runner 4
-                                           4,  // Position value for runner 5
-                                           5,  // Position value for runner 6
-                                           6,  // Position value for runner 7
-                                           7,  // Position value for runner 8
-                                           8}; // Position value for runner 9
+const double POSITION[MAX_RUNNER_COUNT] = {60,  // Position value for runner 1
+                                           35,  // Position value for runner 2
+                                           35,  // Position value for runner 3
+                                           60,  // Position value for runner 4
+                                           10,  // Position value for runner 5
+                                           60,  // Position value for runner 6
+                                           43,  // Position value for runner 7
+                                           43,  // Position value for runner 8
+                                           10}; // Position value for runner 9
 #endif
 
+// #define TIME_ACTIVITY_OVERRIDE // Enable to manually override the activity and action data
 #ifdef TIME_ACTIVITY_OVERRIDE
 const double ACTIVITY_TIME[MAX_RUNNER_COUNT][10][2] = {
     {{6, FAST_SPRINT}, {1, CRAWL}, {2, SLEEP}, {1, SPRINT}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}}, // Time % and Action value for Runner 1 [.][.][0] = time % ; [.][.][1] = activity
@@ -94,58 +92,60 @@ const double ACTIVITY_TIME[MAX_RUNNER_COUNT][10][2] = {
 };
 #endif
 
+// #define WEATHER_CONTDITION_OVERRIDE // Enable to manually override the weather condition
 #ifdef WEATHER_CONTDITION_OVERRIDE
 int WeatherIndex_Counter = 0;
-const string WEATHER_NAME[7] = {"Clear",                 // Weather 1 Name
-                                "CLOUDY",                // Weather 2 Name
-                                "OVERCAST",              // Weather 3 Name
-                                "Clear",                 // Weather 4 Name
-                                "Clear",                 // Weather 5 Name
-                                "Clear",                 // Weather 6 Name
-                                "Clear"};                // Weather 7 Name
-const int WEATHER_VALUE_DURATION[7][2] = {{CLEAR, 3},    // Weather 1 Value {Value, Duration}
-                                          {CLOUDY, 4},   // Weather 2 Value {Value, Duration}
-                                          {OVERCAST, 2}, // Weather 3 Value {Value, Duration}
-                                          {CLEAR, 1},    // Weather 4 Value {Value, Duration}
-                                          {CLEAR, 1},    // Weather 5 Value {Value, Duration}
-                                          {CLEAR, 1},    // Weather 6 Value {Value, Duration}
-                                          {CLEAR, 1}};   // Weather 7 Value {Value, Duration}
+const string WEATHER_NAME[7] = {"Clear",               // Weather 1 Name
+                                "Clear",               // Weather 2 Name
+                                "Clear",               // Weather 3 Name
+                                "Clear",               // Weather 4 Name
+                                "Clear",               // Weather 5 Name
+                                "Clear",               // Weather 6 Name
+                                "Clear"};              // Weather 7 Name
+const int WEATHER_VALUE_DURATION[7][2] = {{CLEAR, 1},  // Weather 1 Value {Value, Duration}
+                                          {CLEAR, 1},  // Weather 2 Value {Value, Duration}
+                                          {CLEAR, 1},  // Weather 3 Value {Value, Duration}
+                                          {CLEAR, 1},  // Weather 4 Value {Value, Duration}
+                                          {CLEAR, 1},  // Weather 5 Value {Value, Duration}
+                                          {CLEAR, 1},  // Weather 6 Value {Value, Duration}
+                                          {CLEAR, 1}}; // Weather 7 Value {Value, Duration}
 #endif
 
+// #define PATH_CONDITION_OVERRIDE // Enable to manually override the path condition factor
 #ifdef PATH_CONDITION_OVERRIDE
-const int PATH_COUNT = 4;
-const string PATH_NAME[PATH_COUNT] = {"Rocky ",     // Path 1 Name
-                                      "D.Hill",     // Path 2 Name
-                                      "Sandy ",     // Path 3 Name
-                                      "Muddy "};    // Path 4 Name
-const int PATH_VALUE[PATH_COUNT] = {ROCKY,          // Path 1 Value
-                                    DOWN_HILL,      // Path 2 Value
-                                    SANDY,          // Path 3 Value
-                                    MUDDY};         // Path 4 Value
-const int PATH_ID_LENGTH[PATH_COUNT][2] = {{5, 19}, // Path 1 ID and Length {ID, Length}
-                                           {2, 7},  // Path 2 ID and Length {ID, Length}
-                                           {4, 7},  // Path 3 ID and Length {ID, Length}
-                                           {7, 7}}; // Path 4 ID and Length {ID, Length}
+const int PATH_COUNT = 3;
+const string PATH_NAME[PATH_COUNT] = {"Grass ",      // Path 1 Name
+                                      "Grass ",      // Path 2 Name
+                                      "Grass "};     // Path 3 Name
+const int PATH_VALUE[PATH_COUNT] = {GRASS,           // Path 1 Value
+                                    GRASS,           // Path 2 Value
+                                    GRASS};          // Path 3Value
+const int PATH_ID_LENGTH[PATH_COUNT][2] = {{3, 20},  // Path 1 ID and Length {ID, Length}
+                                           {3, 20},  // Path 2 ID and Length {ID, Length}
+                                           {3, 20}}; // Path 3 ID and Length {ID, Length}
+
 #endif
 #pragma endregion Override Values
 
 // Variable that can be changed in Menu module
-int Runner_Count = 3;        // Default value is 2
-int Track_Length = 40;       // Default value is 60
+int Runner_Count = 2;        // Default value is 2
+int Track_Length = 60;       // Default value is 60
 int Refresh_Interval = 1000; // Default value is 1000
 
 // Variables to store and keep track of the winner and gotcha runner
-int Winner_Count = 0;                           // Counter for winner
-int Winner[MAX_RUNNER_COUNT] = {0};             // Winners' index [Winning Runner Number]
-int Gotcha_Count = 0;                           // Counter for gotcha
-int Gotcha_Group_Count = 0;                     // Counter for gotcha group
-int Gotcha_Group[MAX_RUNNER_COUNT / 2][2];      // Gotcha's index [Position Group][0:Position of gotcha, 1:Count of runner]
-double Pos_Sample = 0;                          // Position sample for searching
-double Runner_Pos[MAX_RUNNER_COUNT] = {0};      // To store Runner's position
-double Runner_Pos_Sort[MAX_RUNNER_COUNT] = {0}; // Mirror of runner's position use for sorting and searching
+int Winner_Count = 0;                            // Counter for winner
+int Winner[MAX_RUNNER_COUNT] = {0};              // Winners' index [Winning Runner Number]
+int Gotcha_Count = 0;                            // Counter for gotcha
+int Gotcha_Group_Count = 0;                      // Counter for gotcha group
+int Gotcha_Group[MAX_RUNNER_COUNT / 2][2] = {0}; // Gotcha's index [Position Group][0:Position of gotcha, 1:Count of runner]
+double Pos_Sample = 0;                           // Position sample for searching
+double Runner_Pos[MAX_RUNNER_COUNT] = {0};       // To store Runner's position
+double Runner_Pos_Sort[MAX_RUNNER_COUNT] = {0};  // Mirror of runner's position use for sorting and searching
 
-bool inputError, valueError;                        // Variables for error flags
-string userIn_Option, userIn_Value, userIn_Restart; // String to store the user input
+#ifdef ENABLE_SETTINGS
+bool inputError, valueError;        // Variables for error flags
+string userIn_Option, userIn_Value; // String to store the user input
+#endif
 
 struct Movement_Conditioner
 {
@@ -197,29 +197,26 @@ Restart:
     MenuModule();
 #endif
 
-#ifdef ENABLE_CLEAR_SCREEN // The message for crealscreen operation is selected
-    system("cls");         // Clear the system screen
+#ifdef ENABLE_CLEAR_SCREEN
+    system("cls"); // Clear the console screen
 #endif
-
-    Generate_Path();                                 // Generate path condition once for the whole simulation
-    ShowOutputs();                                   // Display all interface
-    system("pause");                                 // Promt the user for starting the race
-    cout << "\n\nBANG !!! AND AWAY THEY GO !!!\n\n"; // Print the started message
-
+    Generate_Path(); // Generate path condition once for the whole simulation
+    ShowOutputs();   // Display all interface
+    system("pause"); // Promt the user for starting the race
 START:
-#ifdef ENABLE_CLEAR_SCREEN // The message for crealscreen operation is selected
-    system("cls");         // Clear the system screen
+#ifdef ENABLE_CLEAR_SCREEN
+    system("cls"); // Clear the console screen
 #endif
 
 #ifdef REFRESH_POS_TIMER        // Initialize and get a time stamp with chrono high resolution clock if Timer operation is selected
     high_resolution_clock hrc;  // Use hrc as high_resolution_clock
     auto timeStamp = hrc.now(); // Get a time stamp
 #endif
-
     Generate_Runner_Movement(); // Refresh each runner's position and update Winners at once
     ShowOutputs();              // Display all interface
 
 #ifndef ENABLE_ENDLESS_LOOP // Disable the algorithm to end the program when winner count is more than 0
+    string userIn_Restart;  // String to store the user input
     if (Winner_Count >= 1)  // Check if the winner count is more than 0
     {
         cout << "\nThe simulation has ended!\n"
@@ -287,7 +284,7 @@ int randomInt(int minInt = 0, int maxInt = 0)
 // #    Function 	:   Generate_Weather
 // #    Description	:   Generate weather condition and the duration of the weather
 // #    Argument	:   n/a
-// #    Return		:   n/a
+// #    Return		:   Generated weahter value
 int Generate_Weather()
 {
     Weather.Duration = randomInt(MIN_WEATHER_DURATION, MAX_WEATHER_DURATION); // Generate a random duration for the weather
@@ -540,6 +537,7 @@ void CheckGotcha()
 // #    Return		:   n/a
 void ShowSimHeader()
 {
+    cout << "\n# ==== BANG !!! AND AWAY THEY GO !!! ==== #\n\n"; // Print the started message
     cout << "============================\n"
          << "# (Running Man Simulator ) #\n"
          << "============================\n\n";
@@ -564,8 +562,6 @@ void ShowWeather()
         prevWeather = currentWeather;            // Update previous weather
     }
     cout << "Weather  : " << Weather.Condition_Name << "\tDuration: " << Weather.Duration << endl; // Display the weather information
-                                                                                                   //Reduce the duration by 1 per for each cycle
-
 #else
     if (Weather.Duration < 0)        // Accounting for the frist time
     {
@@ -625,9 +621,7 @@ void ShowPosMark()
 // #    Return		:   n/a
 void ShowPath()
 {
-    cout << "Path Cond: |"; // Print the label
-    int temp;               // Create temporary variable to store
-
+    cout << "Path Cond: |";                        // Print the label
     for (int i = 0; i < Path.Condition_Count; i++) // For each path conditions
     {
         switch (Path.Length[i][0]) // Base on the value
@@ -664,9 +658,7 @@ void ShowPath()
             break;
         }
         cout << Path.Condition_Name; // Print the condition name
-
-        temp = Path.Length[i][1] - 6; // Find the remaining space after printing the condition name
-        for (int x = 1; x < temp; x++)
+        for (int x = 1; x < Path.Length[i][1] - 6; x++)
         {
             cout << " "; // Print whitespace for the space between each different path condition
         }
@@ -898,11 +890,9 @@ void UpdateValues()
     case '1': // Runner Count
         Runner_Count = stoi(userIn_Value);
         break;
-
     case '2': // Track Length
         Track_Length = stoi(userIn_Value);
         break;
-
     case '3': // Refresh Interval
         Refresh_Interval = stoi(userIn_Value);
         break;

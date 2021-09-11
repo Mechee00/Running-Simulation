@@ -12,7 +12,8 @@
         "xstring": "cpp",
         "ostream": "cpp",
         "regex": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "algorithm": "cpp"
     },
     "editor.defaultFormatter": "ms-vscode.cpptools"
 }
