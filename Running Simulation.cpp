@@ -14,11 +14,11 @@ using namespace std::chrono; // Use for highresolutionclock.
 
 #define ENABLE_CLEAR_SCREEN // Enable or disable ENABLE_CLEAR_SCREEN operation
 #define ENABLE_SETTINGS     // Enable or disable menu module
-#define ENABLE_ENDLESS_LOOP // Enable or disable the program to end when there is a winner
+// #define ENABLE_ENDLESS_LOOP // Enable or disable the program to end when there is a winner
 
 // MUST CHOOSE 1 and ONLY 1
-#define REFRESH_POS_MANUAL // Manually press any key to refresh the runner position
-// #define REFRESH_POS_TIMER // Using chrono time function to time the program
+// #define REFRESH_POS_MANUAL // Manually press any key to refresh the runner position
+#define REFRESH_POS_TIMER // Using chrono time function to time the program
 // #define REFRESH_POS_SLEEP  // Using Sleep() function to halt the program
 
 #pragma region Movement, Weather And Path Constants
@@ -186,7 +186,7 @@ void MenuModule();
 #endif
 #pragma endregion FUNCTIONS
 
-// ================================================================================================================================================================================ The main program
+// ====================================================================================================== The main program
 void main()
 {
     srand(time(NULL));                                                                                        // Initialize Seed for rand function
@@ -259,7 +259,7 @@ START:
 #endif
     goto START; // Loop back to the point labelled with START
 }
-// ================================================================================================================================================================================ The main program
+// ====================================================================================================== The main program
 
 #pragma region FUNCTIONS
 #pragma region Processing
